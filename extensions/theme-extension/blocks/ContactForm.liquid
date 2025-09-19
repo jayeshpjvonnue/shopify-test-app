@@ -1,0 +1,14 @@
+{% schema %}
+{
+  "name": "Contact Form",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}
+
+<form method="post" action="http://localhost:42213/api/contact">
+  <label>Name: <input name="name" required></label>
+  <label>Email: <input name="email" type="email" required></label>
+  <label>Message: <textarea name="message" required></textarea></label>
+  <button type="submit">Send</button>
+</form>
