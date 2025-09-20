@@ -1,0 +1,41 @@
+{% schema %}
+{
+  "name": "Custom Contact Form",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}
+
+<form id="contact-form" method="post" action="/apps/contact">
+  <input type="text" name="name" placeholder="Full name" required>
+  <input type="email" name="email" placeholder="Your email" required>
+  <textarea name="message" placeholder="Your message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+
+<div id="form-message"></div>
+
+<script>
+  document.getElementById('contact-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      document.getElementById('form-message').textContent = data.message || 'Message sent!';
+      form.reset();
+    } catch (error) {
+      document.getElementById('form-message').textContent = 'Something went wrong. Try again.';
+    }
+  });
+</script>
+
+{{ 'contact-form.css' | asset_url | stylesheet_tag }}
