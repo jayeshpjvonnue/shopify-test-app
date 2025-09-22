@@ -6,35 +6,45 @@
 }
 {% endschema %}
 
-<form id="contact-form" method="post" action="/apps/contact">
-  <input type="text" name="name" placeholder="Full name" required>
-  <input type="email" name="email" placeholder="Your email" required>
-  <textarea name="message" placeholder="Your message" required></textarea>
+<form id="contactForm">
+  <input name="name" placeholder="Your name" required>
+  <input type="email" name="email" placeholder="Email" required>
+  <textarea name="message" placeholder="Message"></textarea>
   <button type="submit">Send</button>
 </form>
 
-<div id="form-message"></div>
-
 <script>
-  document.getElementById('contact-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contactForm');
 
-    const form = e.target;
-    const formData = new FormData(form);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    try {
-      const res = await fetch(form.action, {
-        method: 'POST',
-        body: formData,
-      });
+      const formData = new FormData(form);
 
-      const data = await res.json();
+      try {
+        const res = await fetch('/apps/myapp/contact-action', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'User-Agent': 'my-shopify-app',
+          },
+        });
 
-      document.getElementById('form-message').textContent = data.message || 'Message sent!';
-      form.reset();
-    } catch (error) {
-      document.getElementById('form-message').textContent = 'Something went wrong. Try again.';
-    }
+        const data = await res.json();
+
+        if (data.success) {
+          alert('Customer created successfully!');
+          form.reset();
+        } else {
+          console.error(data);
+          alert('Error creating customer: ' + (data.shopifyError?.errors || data.error || JSON.stringify(data)));
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Unexpected error: ' + err.message);
+      }
+    });
   });
 </script>
 
